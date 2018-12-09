@@ -1,4 +1,15 @@
+import random # this will be a useful library for shuffling
 
+# This builds a deck of 52 cards. If you are unfamiliar
+# with this notation, check out Andy's supplemental video
+# on list comprehensions (you can find the link in the 
+# Instructor Comments box below).
+
+mydeck = [r+s for r in '23456789TJQKA' for s in 'SHDC'] 
+
+def deal(numhands, n=5, deck=mydeck):
+    random.shuffle(mydeck)
+    return [mydeck[i*n:(i+1)*n] for i in range(numhands) if (i+1)*n <= 52]
 
 def poker(hands):
     "Return the best hand: poker([hand,...]) => hand"
@@ -6,12 +17,13 @@ def poker(hands):
 
 def allmax(iterable, key=None):
     "Return a list of all items equal to the max of the iterable."
+    max_list, max_val = [], None
     key = key or (lambda x: x)
-    max_list = []
-    max_instance = max(iterable, key=key)
-    if not max_instance: return None
     for itr in iterable:
-        if (key(itr) == key(max_instance)):
+        itr_val = key(itr)
+        if not max_list or itr_val > max_val:
+            max_list, max_val = [itr], itr_val
+        elif itr_val == max_val:
             max_list.append(itr)
     return max_list
 
@@ -77,9 +89,15 @@ def test():
     fkranks = card_ranks(fk)
     tpranks = card_ranks(tp)
 
+    assert len(deal(10, 5)) == 10
+    assert len(deal(10, 5)[9]) == 5
+    assert len(deal(3, 26)) == 2
+    assert len(deal(3, 26)[0]) == 26
+
     assert card_ranks(sf) == [10, 9, 8, 7, 6]
     assert card_ranks(fk) == [9, 9, 9, 9, 7]
     assert card_ranks(fh) == [10, 10, 10, 7, 7]
+    assert card_ranks(al) == [5, 4, 3, 2, 1]
 
     assert poker([sf, fk, fh]) == [sf]
     assert poker([fk, fh]) == [fk]
@@ -104,6 +122,5 @@ def test():
     assert two_pair(tpranks) == (9, 5)
 
     return 'tests pass'
-
 
 print(test())
