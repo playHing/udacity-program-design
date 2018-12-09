@@ -1,12 +1,20 @@
-# CS 212, hw1-1: 7-card stud
+# CS 212, hw1-2: Jokers Wild
 #
 # -----------------
 # User Instructions
 #
-# Write a function best_hand(hand) that takes a seven
-# card hand as input and returns the best possible 5
-# card hand. The itertools library has some functions
-# that may help you solve this problem.
+# Write a function best_wild_hand(hand) that takes as
+# input a 7-card hand and returns the best 5 card hand.
+# In this problem, it is possible for a hand to include
+# jokers. Jokers will be treated as 'wild cards' which
+# can take any rank or suit of the same color. The 
+# black joker, '?B', can be used as any spade or club
+# and the red joker, '?R', can be used as any heart 
+# or diamond.
+#
+# The itertools library may be helpful. Feel free to 
+# define multiple functions if it helps you solve the
+# problem. 
 #
 # -----------------
 # Grading Notes
@@ -17,12 +25,34 @@
 # hands: 4 kings along with any of the three queens).
 
 import itertools
+import hw1_1
 
-def best_hand(hand):
-    "From a 7-card hand, return the best 5 card hand."
-    
-    # Your code here
-    
+bj = [r+s for r in '23456789TJQKA' for s in 'SC']
+rj = [r+s for r in '23456789TJQKA' for s in 'HD']
+
+def best_wild_hand(hand):
+    "Try all values for jokers in all 5-card selections."
+    best, best_hand_rank = [], None
+    bj_list = list(map(list, itertools.product(bj, repeat=hand.count('?B'))))
+    rj_list = list(map(list, itertools.product(rj, repeat=hand.count('?R'))))
+    for bj_sublist in bj_list:
+        for rj_sublist in rj_list:
+            candidate = hw1_1.best_hand([card for card in hand if card not in ['?B', '?R']]+bj_sublist+rj_sublist)
+            candidate_hand_rank = hand_rank(candidate)
+            if not best or best_hand_rank < candidate_hand_rank:
+                best = candidate
+                best_hand_rank = candidate_hand_rank
+    return best
+
+def test_best_wild_hand():
+    assert (sorted(best_wild_hand("6C 7C 8C 9C TC 5C ?B".split()))
+            == ['7C', '8C', '9C', 'JC', 'TC'])
+    assert (sorted(best_wild_hand("TD TC 5H 5C 7C ?R ?B".split()))
+            == ['7C', 'TC', 'TD', 'TH', 'TS'])
+    assert (sorted(best_wild_hand("JD TC TH 7C 7D 7S 7H".split()))
+            == ['7C', '7D', '7H', '7S', 'JD'])
+    return 'test_best_wild_hand passes'
+
 # ------------------
 # Provided Functions
 # 
@@ -85,14 +115,5 @@ def two_pair(ranks):
         return (pair, lowpair)
     else:
         return None 
-    
-def test_best_hand():
-    assert (sorted(best_hand("6C 7C 8C 9C TC 5C JS".split()))
-            == ['6C', '7C', '8C', '9C', 'TC'])
-    assert (sorted(best_hand("TD TC TH 7C 7D 8C 8S".split()))
-            == ['8C', '8S', 'TC', 'TD', 'TH'])
-    assert (sorted(best_hand("JD TC TH 7C 7D 7S 7H".split()))
-            == ['7C', '7D', '7H', '7S', 'JD'])
-    return 'test_best_hand passes'
 
-print(test_best_hand())
+print(test_best_wild_hand())
