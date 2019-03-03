@@ -16,10 +16,11 @@ def compile_formula(formula, verbose=False):
     is called with Y eqal to 0, the function should return False."""
     
     letters = ''.join(set(re.findall('[A-Z]', formula)))
+    non_zero_items = set(re.findall(r'\b[A-Z]', formula)) # readability
     parms = ', '.join(letters)
     tokens = list(map(compile_word, re.split('([A-Z]+)', formula)))
     body = ''.join(tokens)
-    non_zero_items = set([token[-2] for token in tokens if '10' in token])
+    # non_zero_items = set([token[-2] for token in tokens if '10' in token])
     f = 'lambda {0}: {1} if all([item != 0 for item in [{2}]]) else False' \
             .format(parms, body, ','.join(non_zero_items))
     if verbose: print(f)
