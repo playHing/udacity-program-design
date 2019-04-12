@@ -15,12 +15,22 @@
 #
 # Please do not use regular expressions to solve this quiz!
 
-def longest_subpalindrome_slice(text):
+def longest_subpalindrome_slice(text: str):
     "Return (i, j) such that text[i:j] is the longest palindrome in text."
-    # Your code here
-
-def longest_subp_stop_at_i(i):
+    # Your code here+
+    if text == '': return (0 ,0)
+    text = text.lower()
+    res = (1, (0, 1))
+    for ml in range(len(text)):
+        for mr in (ml, ml+1):
+            if mr >= len(text): continue
+            lo, hi = ml, mr
+            while 0 <= lo and hi < len(text) and text[lo] == text[hi]:
+                lo -= 1
+                hi += 1
+            if hi-lo-1 > res[0]: res = (hi-lo-1, (lo+1, hi))
     
+    return res[1]
     
 def test():
     L = longest_subpalindrome_slice
