@@ -1,4 +1,4 @@
-2# --------------
+# --------------
 # User Instructions
 #
 # Write a function, longest_subpalindrome_slice(text) that takes 
